@@ -10,6 +10,8 @@ make
 
 The code compiles with `cc -Wall -Wextra -Werror`. The build is incremental and the binary will not relink unnecessarily.
 
+---
+
 ## Usage
 
 You can pass multiple map files as arguments or read a single map directly from standard input.
@@ -19,6 +21,7 @@ You can pass multiple map files as arguments or read a single map directly from 
 ./bsq < map_file                # or read a single map from stdin
 ```
 
+---
 
 ## Map format Specification
 
@@ -26,11 +29,13 @@ A valid map consists of a header line followed by the grid itself.
 
 * Header: <number_of_rows><empty_char><obstacle_char><full_char>\n
 
-* * The last three characters before the newline define the map's alphabet.
+  * The last three characters before the newline define the map's alphabet.
 
-* * They must be printable, strictly pairwise distinct, and can include spaces or digits.
+  * They must be printable, strictly pairwise distinct, and can include spaces or digits.
 
 * Grid: Every subsequent line must contain only the defined empty or obstacle characters, and all rows must share the exact same width.
+
+---
 
 ## Approach
 
@@ -39,6 +44,8 @@ A valid map consists of a header line followed by the grid itself.
 * The grid is allocated row by row and the input is copied while every cell is validated against the declared alphabet.
 * The largest square is computed with a classic O(rows * cols) dynamic programming pass stored in a single flat `unsigned int` array indexed as `dp[i * cols + j]`.
 * The bottom-right corner of the max value is tracked during the same pass; iteration order naturally yields the topmost-then-leftmost square required by the subject.
+
+---
 
 ## Codebase Layout
 
