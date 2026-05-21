@@ -6,13 +6,16 @@
 /*   By: idilsincer <idilsincer@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/01 18:24:11 by idilsincer        #+#    #+#             */
-/*   Updated: 2026/05/21 18:12:50 by idilsincer       ###   ########.fr       */
+/*   Updated: 2026/05/21 22:56:21 by idilsincer       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include "bsq.h"
 
+/*Free the first 'n' row pointers of a partially-allocated grid, 
+then free the array itself. Used for cleanup when build_grid() fails mid-way 
+*/
 void	free_partial(char **g, int n)
 {
 	int	i;
@@ -26,6 +29,11 @@ void	free_partial(char **g, int n)
 	free(g);
 }
 
+/*Allocate a rows × cols grid of chars. 
+Each row is an independent heap allocation (no NUL terminator added; 
+row width is always exactly 'cols' bytes). 
+Returns NULL and frees all partial allocations on failure. 
+*/
 char	**build_grid(int rows, int cols)
 {
 	char	**g;
@@ -48,6 +56,12 @@ char	**build_grid(int rows, int cols)
 	return (g);
 }
 
+/*Allocate c->grid and fill it from 'buf' starting at 'offset'. 
+Delegates row-by-row validation to check_row(). 
+After all rows are consumed, 
+verifies that 'buf' is exhausted (no trailing garbage allowed). 
+Returns 1 on success, 0 on any error (grid is freed by the caller). 
+*/
 int	populate_grid(char *buf, int offset, t_canvas *c)
 {
 	int	i;
@@ -68,6 +82,8 @@ int	populate_grid(char *buf, int offset, t_canvas *c)
 	return (1);
 }
 
+/*Release all memory owned by a t_canvas. 
+Safe to call even if c->grid is NULL (e.g. after a failed build). */
 void	free_canvas(t_canvas *c)
 {
 	int	i;
@@ -84,6 +100,10 @@ void	free_canvas(t_canvas *c)
 	c->grid = 0;
 }
 
+/*Print the entire grid to stdout, one row per line. 
+Each cell is written with out_char() to stay within 
+the no-printf constraint of the project. 
+*/
 void	print_canvas(t_canvas *c)
 {
 	int	i;

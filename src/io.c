@@ -6,7 +6,7 @@
 /*   By: idilsincer <idilsincer@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/01 18:24:16 by idilsincer        #+#    #+#             */
-/*   Updated: 2026/05/21 18:12:43 by idilsincer       ###   ########.fr       */
+/*   Updated: 2026/05/21 23:03:00 by idilsincer       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,13 @@
 #include <stdlib.h>
 #include "bsq.h"
 
+// Equavilent to ft_putchar
 void	out_char(char c)
 {
 	write(1, &c, 1);
 }
 
+// Equavilent to ft_putstr
 void	out_str(char *s)
 {
 	int	i;
@@ -31,6 +33,11 @@ void	out_str(char *s)
 	}
 }
 
+/*Concatenate a new chunk of 'n' bytes onto an existing buffer of 'total' 
+bytes and return the freshly allocated result (NUL-terminated). 
+The caller is responsible for freeing both 'buf' and the returned pointer. 
+Returns NULL on allocation failure. 
+*/
 char	*append_chunk(char *buf, int total, char *chunk, int n)
 {
 	char	*out;
@@ -55,6 +62,12 @@ char	*append_chunk(char *buf, int total, char *chunk, int n)
 	return (out);
 }
 
+/*Core read loop: repeatedly fills a BSQ_CHUNK-sized stack buffer 
+from 'fd' and grows the heap buffer via append_chunk() until EOF or error. 
+The previous heap buffer is freed after every successful append 
+so there is never more than one stale copy alive at a time. 
+Returns NULL and frees 'buf' on a read error. 
+*/
 static char	*read_loop(int fd, char *buf)
 {
 	char	chunk[BSQ_CHUNK];
@@ -82,6 +95,11 @@ static char	*read_loop(int fd, char *buf)
 	return (buf);
 }
 
+/*Read the entire content of file descriptor 'fd' into a heap-allocated, 
+NUL-terminated string. 
+Returns NULL on any allocation or read failure. 
+The caller must free the returned pointer. 
+*/
 char	*slurp(int fd)
 {
 	char	*buf;

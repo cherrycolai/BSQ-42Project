@@ -6,12 +6,16 @@
 /*   By: idilsincer <idilsincer@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/01 18:24:20 by idilsincer        #+#    #+#             */
-/*   Updated: 2026/05/21 18:12:31 by idilsincer       ###   ########.fr       */
+/*   Updated: 2026/05/21 23:02:45 by idilsincer       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "bsq.h"
 
+/*Convert a decimal ASCII string to a non-negative int. 
+Stops at the first non-digit character (no sign support). 
+Returns -1 on overflow (guards against values > INT_MAX). 
+*/
 int	str_to_int(char *s)
 {
 	int	n;
@@ -29,6 +33,11 @@ int	str_to_int(char *s)
 	return (n);
 }
 
+/*Return 1 if all three characters are printable 
+ASCII (0x20–0x7E) and mutually distinct. 
+Used to validate the three map symbols 
+(vacant / blocked / marked) in the header line. 
+*/
 int	printable3_distinct(char a, char b, char d)
 {
 	if (a < 32 || a > 126)
@@ -42,6 +51,15 @@ int	printable3_distinct(char a, char b, char d)
 	return (1);
 }
 
+/*Parse the first line of 'buf' as the map header. 
+Expected format: "<rows><vacant><blocked><marked>\n". 
+Everything before the last three characters must be decimal digits. 
+The three trailing characters must be printable and mutually distinct. 
+The line must be at least 4 characters long (1 digit + 3 symbols). 
+Populates c->rows, c->vacant, c->blocked, c->marked. 
+Sets *offset to the byte index of the first data row on success. 
+Returns 1 on success, 0 on any format error.
+*/
 int	parse_header(char *buf, t_canvas *c, int *offset)
 {
 	int	nl;
@@ -71,6 +89,9 @@ int	parse_header(char *buf, t_canvas *c, int *offset)
 	return (1);
 }
 
+/*Count the number of characters on the first data row
+starting at 'buf[offset]', 
+stopping at '\n' or '\0'. This value becomes c->cols */
 int	detect_cols(char *buf, int offset)
 {
 	int	n;
@@ -81,6 +102,13 @@ int	detect_cols(char *buf, int offset)
 	return (n);
 }
 
+/*Validate and copy one grid row into c->grid[row_idx].
+Every character must be either c->vacant or c->blocked. 
+The row must be exactly c->cols wide,
+terminated by '\n' (or '\0' for the very last row). 
+Returns the buffer offset that immediately follows this row,
+or -1 on any validation failure. 
+*/
 int	check_row(char *buf, int offset, t_canvas *c, int row_idx)
 {
 	int	j;
